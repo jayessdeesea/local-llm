@@ -1,0 +1,31 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your application has been deployed successfully!
+
+To access the web interface:
+{{- if contains "LoadBalancer" .Values.frontend.service.type }}
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        You can watch its status by running:
+        kubectl get svc --namespace {{ .Release.Namespace }} -w frontend
+
+  Once the external IP is available, the application will be accessible at:
+  http://<external-ip>
+{{- else if contains "ClusterIP" .Values.frontend.service.type }}
+  You can port-forward the frontend service using:
+  kubectl port-forward svc/frontend {{ .Values.frontend.service.port }}:{{ .Values.frontend.service.port }} --namespace {{ .Release.Namespace }}
+
+  Then access the application at:
+  http://localhost:{{ .Values.frontend.service.port }}
+{{- end }}
+
+The Ollama service is running internally at:
+http://ollama:11434
+
+Available models:
+- llama2 (default)
+
+To check the status of your pods:
+  kubectl get pods --namespace {{ .Release.Namespace }}
+
+For more information about using Ollama, visit:
+https://github.com/ollama/ollama

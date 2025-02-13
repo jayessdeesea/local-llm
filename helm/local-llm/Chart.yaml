@@ -1,0 +1,11 @@
+apiVersion: v2
+name: local-llm
+description: A Helm chart for Local LLM Web UI with Phi-4 model
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+maintainers:
+  - name: Local LLM Team
+
+dependencies: []

@@ -1,0 +1,40 @@
+frontend:
+  name: frontend
+  image:
+    repository: ghcr.io/open-webui/open-webui
+    tag: main
+    pullPolicy: Always
+  service:
+    type: LoadBalancer
+    port: 80
+  resources:
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+    requests:
+      memory: "512Mi"
+      cpu: "200m"
+  env:
+    OLLAMA_API_BASE_URL: "http://ollama:11434"
+    WEBUI_SECRET_KEY: "local-llm-secret"
+
+ollama:
+  name: ollama
+  image:
+    repository: ollama/ollama
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 11434
+  resources:
+    limits:
+      memory: "8Gi"
+      cpu: "4"
+    requests:
+      memory: "4Gi"
+      cpu: "2"
+  persistence:
+    enabled: true
+    size: 10Gi
+    accessMode: ReadWriteOnce

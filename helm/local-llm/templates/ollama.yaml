@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.ollama.name }}
+  labels:
+    {{- include "local-llm.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.ollama.service.type }}
+  ports:
+    - port: {{ .Values.ollama.service.port }}
+      targetPort: {{ .Values.ollama.service.port }}
+      protocol: TCP
+  selector:
+    {{- include "local-llm.selectorLabels" . | nindent 4 }}
+    app: {{ .Values.ollama.name }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.ollama.name }}
+  labels:
+    {{- include "local-llm.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "local-llm.selectorLabels" . | nindent 6 }}
+      app: {{ .Values.ollama.name }}
+  template:
+    metadata:
+      labels:
+        {{- include "local-llm.selectorLabels" . | nindent 8 }}
+        app: {{ .Values.ollama.name }}
+    spec:
+      containers:
+        - name: {{ .Values.ollama.name }}
+          image: "{{ .Values.ollama.image.repository }}:{{ .Values.ollama.image.tag }}"
+          imagePullPolicy: {{ .Values.ollama.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.ollama.service.port }}
+          resources:
+            {{- toYaml .Values.ollama.resources | nindent 12 }}
+          volumeMounts:
+            - name: ollama-data
+              mountPath: /root/.ollama
+      volumes:
+        - name: ollama-data
+          {{- if .Values.ollama.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.ollama.name }}-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+---
+{{- if .Values.ollama.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.ollama.name }}-data
+  labels:
+    {{- include "local-llm.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.ollama.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.ollama.persistence.size }}
+{{- end }}
