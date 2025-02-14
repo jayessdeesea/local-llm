@@ -1,18 +1,22 @@
 # Local LLM with Ollama and Phi-4
 
-A Kubernetes-based deployment for running Phi-4 locally using Ollama and Open WebUI.
+A Kubernetes-based deployment for running Phi-4 locally using Ollama and Open WebUI, optimized for high-memory systems.
 
 ## Prerequisites
 
 - Docker Desktop with Kubernetes enabled
 - kubectl CLI tool
 - Helm (optional, for Helm-based deployment)
+- Windows system with at least 96GB RAM
 
 ## System Requirements
 
-- Memory: At least 16GB RAM (8GB for Ollama)
-- Storage: At least 10GB free space for model storage
-- CPU: 4+ cores recommended
+- Memory: 96GB RAM recommended
+  - 32GB allocated to Ollama
+  - 2GB allocated to frontend
+  - Remaining for system and other processes
+- Storage: At least 20GB free space for model storage and persistence
+- CPU: 8+ cores recommended (8 cores allocated to Ollama)
 
 ## Quick Start
 
@@ -34,54 +38,74 @@ helm install local-llm helm/local-llm
 ```
 
 The deployment will automatically:
-1. Pull and run the Ollama server
-2. Download the Phi-4 model (approximately 9.1GB)
-3. Start the Open WebUI interface
+1. Pull and run the Ollama server with optimized resource allocation
+2. Download and serve the Phi-4 model
+3. Start the Open WebUI interface in single-user mode
 
 ## Architecture
 
 The deployment consists of:
 - Ollama server for model serving
-- Open WebUI for the web interface
-- Persistent storage for model data using Docker Desktop's hostpath provisioner
+  - Memory limit: 32Gi
+  - CPU limit: 8 cores
+  - Persistent storage: 20Gi
+- Open WebUI frontend
+  - Memory limit: 2Gi
+  - CPU limit: 1 core
+  - Single user mode enabled
+- Direct frontend-to-Ollama communication
+- Persistent storage using Docker Desktop's hostpath provisioner
 
 ## Configuration
 
 ### Kubernetes (k8s/base)
 
-The base configuration is in `k8s/base/` and includes:
-- Ollama deployment with Phi-4 model
-- Persistent storage configuration
+The base configuration in `k8s/base/` includes:
+- Ollama deployment with optimized resource allocation
+- Persistent volume configuration (20Gi)
 - Service definitions
+- Frontend deployment with resource limits
 
 ### Helm (helm/local-llm)
 
-The Helm chart in `helm/local-llm/` provides additional configuration options through `values.yaml`:
-- Model selection
-- Resource limits
+The Helm chart in `helm/local-llm/` provides configuration through `values.yaml`:
+- Resource allocation settings
 - Storage configuration
 - Service types
+- Environment variables
 
-## Accessing the Interface
+## Ports and Access
 
-The Open WebUI interface is exposed as a LoadBalancer service. Access it at:
+### Frontend Service
+- Exposed on port 80 via LoadBalancer
+- Access the web interface at:
 ```
-http://localhost:8080
+http://localhost:80
 ```
+
+### Ollama Service
+- Internal port: 11434
+- Used for communication between frontend and Ollama
+- Not exposed externally (accessed through frontend)
 
 ## Storage
 
-Models are stored persistently using Docker Desktop's hostpath storage class. This ensures:
-- Models persist between pod restarts
-- No need to re-download models after redeployment
+Models and data are stored persistently using Docker Desktop's hostpath storage class:
+- 20Gi allocated for model storage
+- Persistent between pod restarts
+- No re-download required after redeployment
 - Efficient local storage management
 
-## Default Model
+## Default Configuration
 
-Phi-4 is configured as the default model and will be automatically pulled on startup. The model:
-- Size: ~9.1GB
-- Optimized for efficiency
-- Suitable for various NLP tasks
+- Model: Phi-4
+- Authentication: Disabled (single user mode)
+- Resource Limits:
+  - Ollama: 32Gi memory, 8 CPU
+  - Frontend: 2Gi memory, 1 CPU
+- Resource Requests:
+  - Ollama: 16Gi memory, 4 CPU
+  - Frontend: 1Gi memory, 500m CPU
 
 ## Troubleshooting
 
@@ -98,6 +122,15 @@ If the pod fails to start:
    ```bash
    kubectl logs -f deployment/ollama
    ```
+4. Verify memory allocation:
+   ```bash
+   kubectl top pods
+   ```
+
+Common issues:
+- Insufficient system memory (requires 96GB RAM)
+- Storage provisioning failures
+- Resource limit constraints
 
 ## License
 
