@@ -7,6 +7,7 @@
 - Pre-built container image
 - Web-based interface
 - Built-in streaming support
+- Single user mode enabled (WEBUI_AUTH=false)
 
 ### Model Service
 - Ollama for model serving
@@ -50,6 +51,6 @@
 
 ## Security Considerations
 1. Local network security
-2. API authentication/authorization
+2. API authentication/authorization (WebUI auth disabled for single user mode)
 3. Resource isolation
 4. Data handling

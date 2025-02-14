@@ -8,6 +8,7 @@ Simplified architecture using Ollama with open-webui frontend.
 - Using pre-built open-webui image directly
 - Updated all configurations to use official images
 - Simplified deployment architecture
+- Enabled single user mode in frontend (WEBUI_AUTH=false)
 
 ## Active Decisions
 
@@ -17,6 +18,7 @@ Simplified architecture using Ollama with open-webui frontend.
    - No custom build required
    - Native chat interface
    - Direct Ollama API integration
+   - Single user mode enabled for simplified access
 
 2. Ollama Service
    - Official ollama/ollama:latest image

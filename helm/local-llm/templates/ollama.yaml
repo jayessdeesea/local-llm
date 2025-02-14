@@ -34,6 +34,18 @@ spec:
     spec:
       containers:
         - name: {{ .Values.ollama.name }}
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    {{- range .Values.ollama.models }}
+                    {{- if .pullOnStart }}
+                    ollama pull {{ .name }}
+                    {{- end }}
+                    {{- end }}
           image: "{{ .Values.ollama.image.repository }}:{{ .Values.ollama.image.tag }}"
           imagePullPolicy: {{ .Values.ollama.image.pullPolicy }}
           ports:
@@ -62,6 +74,7 @@ metadata:
 spec:
   accessModes:
     - {{ .Values.ollama.persistence.accessMode }}
+  storageClassName: hostpath
   resources:
     requests:
       storage: {{ .Values.ollama.persistence.size }}

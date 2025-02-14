@@ -10,6 +10,6 @@ https://ollama.com/library/phi4
 
 https://hub.docker.com/r/ollama/ollama
 
-docker compose exec ollama ollama pull llama2
+docker compose exec ollama ollama pull phi4
 
 

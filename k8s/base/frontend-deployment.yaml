@@ -36,6 +36,8 @@ spec:
               value: "http://ollama:11434"
             - name: WEBUI_SECRET_KEY
               value: "local-llm-secret"
+            - name: WEBUI_AUTH
+              value: "false"
           resources:
             limits:
               memory: "512Mi"
