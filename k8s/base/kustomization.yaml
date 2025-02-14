@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
-  - frontend-deployment.yaml
-  - ollama-deployment.yaml
+  - frontend.yaml
+  - ollama.yaml
 
 namespace: local-llm

@@ -8,22 +8,29 @@
 - Web-based interface
 - Built-in streaming support
 - Single user mode enabled (WEBUI_AUTH=false)
+- Resource limits: 2Gi memory, 1 CPU
+- Resource requests: 1Gi memory, 500m CPU
 
 ### Model Service
 - Ollama for model serving
-- llama2 language model
+- phi4 language model
 - Native API and streaming support
+- Resource limits: 32Gi memory, 8 CPU
+- Resource requests: 16Gi memory, 4 CPU
+- Persistent storage: 20Gi
 
 ### Infrastructure
 - Docker for containerization
 - Kubernetes for orchestration
 - Docker Desktop (Windows) as local platform
+- Host system: 96 GiB RAM available
 
 ## Development Setup
 
 ### Prerequisites
 - Docker Desktop for Windows with Kubernetes enabled
 - Git for version control
+- Minimum 32Gi RAM recommended for model serving
 
 ### Project Structure
 ```
@@ -34,7 +41,7 @@
 ```
 
 ## Technical Constraints
-1. Resource limitations of local Docker Desktop
+1. Resource allocation optimized for 96 GiB system
 2. Network communication between pods
 3. Model serving requirements
 4. Container image size considerations

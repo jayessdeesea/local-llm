@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: {{ .Release.Namespace | default "local-llm" }}
-  labels:
-    name: {{ .Release.Namespace | default "local-llm" }}
-    environment: {{ .Values.global.environment }}
-    {{- include "local-llm.labels" . | nindent 4 }}
